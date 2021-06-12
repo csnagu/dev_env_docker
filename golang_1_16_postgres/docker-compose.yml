@@ -1,0 +1,41 @@
+version: "3"
+services:
+  postgresql:
+    build:
+      context: ./docker/postgresql
+      dockerfile: Dockerfile
+    hostname: 'postgres'
+    env_file:
+      - docker/postgresql/.env
+    ports:
+      - 5432:5432
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data:rw
+    environment:
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --locale=C'
+    logging:
+      driver: json-file
+      options:
+        max-size: '5m'
+        max-file: '1'
+
+  app:
+    build:
+      context: ./
+      dockerfile: docker/golang/Dockerfile
+    depends_on:
+      - postgresql
+    ports:
+      - 8080:8080
+    volumes:
+      - ./src:/go/src/app:rw
+    tty: true
+    logging:
+      driver: json-file
+      options:
+        max-size: '5m'
+        max-file: '1'
+
+volumes:
+  postgresql_data:
+    driver: local
