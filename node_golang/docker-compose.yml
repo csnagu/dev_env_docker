@@ -1,0 +1,36 @@
+version: "3"
+services:
+  front-end:
+    build:
+      context: ./docker/node
+      dockerfile: Dockerfile
+    depends_on:
+      - back
+    hostname: "front"
+    tty: true
+    ports:
+      - 3000:3000
+    volumes:
+      - ./docker/node/app:/node/app
+      - /node/app/node_modules
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "1"
+
+  back-end:
+    build:
+      context: ./docker/golang
+      dockerfile: Dockerfile
+    hostname: "back"
+    tty: true
+    ports:
+      - 8000:8000
+    volumes:
+      - ./docker/golang/app:/go/src
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "1"
