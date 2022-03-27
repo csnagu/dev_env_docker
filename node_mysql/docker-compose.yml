@@ -1,0 +1,33 @@
+version: "3"
+services:
+  app:
+    build: .
+    tty: true
+    depends_on:
+      - db
+    ports:
+      - 3000:3000
+    volumes:
+      - ./app:/app
+      - /app/node_modules
+    networks:
+      - app_network
+  db:
+    image: mysql:8.0
+    platform: linux/x86_64
+    tty: true
+    ports:
+      - 3306:3306
+    volumes:
+      - db-store:/var/lib/mysql
+      - ./mysql_logs:/var/log/mysql
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_ROOT_PASSWORD: test
+    networks:
+      - app_network
+
+volumes:
+  db-store:
+networks:
+  app_network:
